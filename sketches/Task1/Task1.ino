@@ -22,7 +22,8 @@ void setup() {
 }
 
 void loop() {
-  L_motor.system_execute();
-  R_motor.system_execute();
-
+//  L_motor.system_execute();
+//  R_motor.system_execute();
+  L_motor.read_motor_speed();
+  R_motor.read_motor_speed();
 }

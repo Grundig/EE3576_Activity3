@@ -34,18 +34,26 @@ class single_driver{
 		// Set up motor
 		void setup_motor(int pwm_motor_pin, int direction_pin)
 		{
+			if(verbose)
+				Serial.println("Motor setup");
+			
 			HBmotor.setup_HBridgeDCmotor(pwm_motor_pin, direction_pin);
 		}
 		
 		// Set up speed measuring unit, hall effect sensor
 		void setup_speed_measure(ArduinoInterruptNames measure_pin)  // int_0, pin 2
 		{
+			if(verbose)
+				Serial.println("Speed measure setup");
+				
 			rotate_count.setupSpeedMeasure(measure_pin);
 		}
 		
 		// Set times between checks for components and system
 		void set_time_intervals(int target_speed_time)
 		{
+			if(verbose)
+				Serial.println("Time interval setup");
 			target_speed_check.setInterCheck(target_speed_time);
 		}
 		        
