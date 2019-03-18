@@ -3,9 +3,9 @@
 
 
 
-#include <..\InterruptBasedInputs\InterruptBasedInputs.h>
+#include <InterruptBasedInputs.h>
 
-#include <..\IntervalCheckTimer\IntervalCheckTimer.h>
+#include <IntervalCheckTimer.h>
 
 
 

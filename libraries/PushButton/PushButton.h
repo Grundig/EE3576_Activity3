@@ -8,7 +8,7 @@
 //#include <Arduino.h>
 //#endif
 
-#include "..\IntervalCheckTimer\IntervalCheckTimer.h"
+#include "IntervalCheckTimer.h"
 
 
 //\\\\\\\\\\\\\\ IO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

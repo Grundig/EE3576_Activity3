@@ -1,7 +1,7 @@
 #ifndef SYSTEMCONTROLUNIT_H
 #define SYSTEMCONTROLUNIT_H
 
-#include <..\DCmotor\DCmotor.h>
+#include <DCmotor.h>
 
 
 

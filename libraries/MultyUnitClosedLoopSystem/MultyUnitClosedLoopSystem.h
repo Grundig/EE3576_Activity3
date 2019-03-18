@@ -3,11 +3,11 @@
 
 
 
-#include <..\Basic_Input\Basic_Input.h>
-#include <..\PushButton\PushButton.h>
-#include <..\InterruptBasedSpeedMeasure\InterruptBasedSpeedMeasure.h>
-#include <..\DCmotor\DCmotor.h>
-#include <..\SystemControlUnit\SystemControlUnit.h>
+#include <Basic_Input.h>
+#include <PushButton.h>
+#include <InterruptBasedSpeedMeasure.h>
+#include <DCmotor.h>
+#include <SystemControlUnit.h>
 
 class ClosedLoopSystemSImple{
 protected:
