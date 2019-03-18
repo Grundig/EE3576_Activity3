@@ -19,7 +19,7 @@ protected:
 	int tot_interr_on_circle;
 
 	// by default there are 6 magnets aroud the wheel
-	static const int DEFAULT_INTER_ON_CIRCLE=6;
+	static const int DEFAULT_INTER_ON_CIRCLE=49;
 	//
 	bool enabled;
 
@@ -95,7 +95,7 @@ public:
 				return -1;
 		}
 		else
-			return -1;
+			return -2;
 	}
 
 	// reset the second counter (used for distance)
