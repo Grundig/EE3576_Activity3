@@ -26,19 +26,19 @@ void setup()
   
   
   // Left motor
-  int motorpin_L=11;// PWM
-  int directionpin_L=10;// digital ON/OFF for the direction
+  int motorpin_L=13;// PWM
+  int directionpin_L=12;// digital ON/OFF for the direction
 
   // Right motor
-  int motorpin_R=13;// PWM
-  int directionpin_R=12;// digital ON/OFF for the direction
+  int motorpin_R=11;// PWM
+  int directionpin_R=10;// digital ON/OFF for the direction
 
   // set 49 for the car; 6 for the small motors
   int inp_interr_on_circle=49;
   // enable the interrupt (int_0 works via pin2)
   // enable the interrupt (int_1 works via pin3)  
-  rotation_counter_L.setupSpeedMeasure(int_0,inp_interr_on_circle);
-  rotation_counter_R.setupSpeedMeasure(int_1,inp_interr_on_circle);
+  rotation_counter_L.setupSpeedMeasure(int_1,inp_interr_on_circle);
+  rotation_counter_R.setupSpeedMeasure(int_0,inp_interr_on_circle);
   ///// ===== paramters selection stop ====
 
 
