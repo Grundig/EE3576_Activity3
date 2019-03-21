@@ -19,19 +19,19 @@ void setup()
   
   ///// ===== paramters selection start ====
   //set to true to test the L motor
-  test_L=true;
+  test_L=false;
 
   //set to true to test the R motor
   test_R=true;
   
   
   // Left motor
-  int motorpin_L=13;// PWM
-  int directionpin_L=12;// digital ON/OFF for the direction
+  int motorpin_L=11;// PWM
+  int directionpin_L=10;// digital ON/OFF for the direction
 
   // Right motor
-  int motorpin_R=11;// PWM
-  int directionpin_R=10;// digital ON/OFF for the direction
+  int motorpin_R=13;// PWM
+  int directionpin_R=12;// digital ON/OFF for the direction
 
   // set 49 for the car; 6 for the small motors
   int inp_interr_on_circle=49;

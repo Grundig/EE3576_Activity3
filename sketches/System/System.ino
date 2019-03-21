@@ -1,16 +1,15 @@
 #include <double_driver.h>
 double_driver motor;
-double task1_speed = 100; //rpm
 
 void setup() {
-  int R_motor_pin = 11;
-  int R_direction_pin = 10;
-  int L_motor_pin = 13;
-  int L_direction_pin = 12;
+  int R_motor_pin = 13;
+  int R_direction_pin = 12;
+  int L_motor_pin = 11;
+  int L_direction_pin = 10;
   int R_measure_pin = int_0;
   int L_measure_pin = int_1;
   int control_interval_time = 250; //in ms
-  double task1_speed = 150; //rpm
+  double task1_speed = 75; //rpm
   
   Serial.begin(9600);
   motor.set_time_intervals(control_interval_time);

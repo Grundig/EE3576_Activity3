@@ -169,6 +169,7 @@ class double_driver{
 				{
 					pid_out_R = pid_R.ComputePID_output(target_speed_R, curr_speed_R);
 					motor_R.setSpeedPWM(pid_out_R);
+				
 					Serial.print(target_speed_R);
 					Serial.print(" ");
 //					Serial.println(curr_speed_R);
@@ -180,12 +181,13 @@ class double_driver{
 				{
 					pid_out_L = pid_L.ComputePID_output(target_speed_L, curr_speed_L);
 					motor_L.setSpeedPWM(pid_out_L);
+				
 					Serial.print(target_speed_L);
 					Serial.print(" ");
 //					Serial.println(curr_speed_L);					
 					Serial.print("PWM left: ");
-//					Serial.println(pid_out_L);
-//					Serial.println("-------------------");
+					Serial.println(pid_out_L);
+					Serial.println("-------------------");
 				}
 				else
 					pid_L.reset_pidcontrol();
