@@ -55,6 +55,27 @@ class double_driver{
 			rotation_counter_L.setupSpeedMeasure(measure_pin_L);
 		}
 		
+		//Set up PID values
+		void setup_pid_R(){
+			double kp=1; 
+			double ki=0.1; 
+			double kd=0;
+			double PIDoutMin=0;
+			double PIDoutMax=255;
+			pid_R= basic_speed_PID(kp, ki, kd, PIDoutMin, PIDoutMax);
+			
+		}
+		
+		void setup_pid_L(){
+			double kp=1; 
+			double ki=0.1; 
+			double kd=0;
+			double PIDoutMin=0;
+			double PIDoutMax=255;
+			pid_L = basic_speed_PID(kp, ki, kd, PIDoutMin, PIDoutMax);
+			
+		}
+		
 		// Set times between checks for components and system
 		void set_time_intervals(int target_speed_time)
 		{
@@ -131,13 +152,13 @@ class double_driver{
 			double RPM;
 			if(side == 0){
 				RPM=rotation_counter_R.getRPMandUpdate();
-    			Serial.print("Right: ");
-				Serial.print(RPM);
+//    			Serial.print("Right: ");
+//				Serial.print(RPM);
 			}
 			if(side == 1){
 				RPM=rotation_counter_L.getRPMandUpdate();
-    			Serial.print(" Left: ");
-    			Serial.println(RPM);
+//    			Serial.print(" Left: ");
+//    			Serial.println(RPM);
     		}
 			return RPM;
     		
@@ -165,33 +186,43 @@ class double_driver{
 				curr_speed_R = read_motor_speed(0);
 				curr_speed_L = read_motor_speed(1);
 				
+			
+			
 				if(motor_R.isStarted())
 				{
+					Serial.print("RIGHT: ");
+					Serial.print(curr_speed_R);
+					Serial.print(" ");
+					Serial.print(target_speed_R);
+					Serial.print(" PWM right: ");
+					Serial.print(pid_out_R);
+					Serial.print(" ");
 					pid_out_R = pid_R.ComputePID_output(target_speed_R, curr_speed_R);
 					motor_R.setSpeedPWM(pid_out_R);
 				
-					Serial.print(target_speed_R);
-					Serial.print(" ");
-//					Serial.println(curr_speed_R);
-					Serial.print("PWM right: ");
-					Serial.println(pid_out_R);
+					
 					
 				}
 				if(motor_L.isStarted())
 				{
+					Serial.print("LEFT: ");
+					Serial.print(curr_speed_L);
+					Serial.print(" ");
+					Serial.print(target_speed_L);
+					
+					Serial.print(" PWM left: ");
+					Serial.print(pid_out_L);
+					Serial.print(" ");
 					pid_out_L = pid_L.ComputePID_output(target_speed_L, curr_speed_L);
 					motor_L.setSpeedPWM(pid_out_L);
-				
-					Serial.print(target_speed_L);
-					Serial.print(" ");
-//					Serial.println(curr_speed_L);					
-					Serial.print("PWM left: ");
-					Serial.println(pid_out_L);
+					
+										
+
 					Serial.println("-------------------");
 				}
-				else
-					pid_L.reset_pidcontrol();
-					pid_R.reset_pidcontrol();
+//				else
+//					pid_L.reset_pidcontrol();
+//					pid_R.reset_pidcontrol();
 			}
 			
 		}

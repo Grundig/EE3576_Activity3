@@ -51,9 +51,9 @@ protected:
 	{
 		// set some default vals
 
-		ref_kp= 0.1; // 0.7  mid val: 5
-		ref_ki= 0;  //0.45 mid val: 0.15
-		ref_kd= 0;  // 0.5  mid val: 3
+		ref_kp= 1; // 0.7  mid val: 5
+		ref_ki= 0.1;  //0.45 mid val: 0.15
+		ref_kd= 0.5;  // 0.5  mid val: 3
 
 		ref_contr_inter_time_ms=REF_CONTR_INTER_MS;
 		PIDoutMin=0.0;
@@ -137,7 +137,8 @@ public:
 		else
 			if(output < PIDoutMin)
 				output = PIDoutMin;
-
+		Serial.print(" error: ");
+		Serial.println(error);
 		//
 		//print to screen 
 		if(echopidcontrol)
