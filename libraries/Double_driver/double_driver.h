@@ -9,7 +9,6 @@
 #include<InterruptBasedSpeedMeasure.h>
 #include<InterruptBasedInputs.h>
 #include<basic_speed_PID.h>
-#include<SpeedMeasure.h>
 
 
 bool verbose = false; //TURN ON FOR DEBUGGING
@@ -30,7 +29,6 @@ class double_driver{
 		HBridgeDCmotor motor_R, motor_L;
 		InterruptSpeedMeasure rotation_counter_R, rotation_counter_L;
 		IntervalCheckTimer speed_check;
-		SpeedMeasure speed_measure;
 
 	public:
 
@@ -55,8 +53,14 @@ class double_driver{
 
 			rotation_counter_R.setupSpeedMeasure(measure_pin_R);
 			rotation_counter_L.setupSpeedMeasure(measure_pin_L);
+		}
 
-			speed_measure = SpeedMeasure(57, &rotation_counter_L, &rotation_counter_R);
+		InterruptSpeedMeasure * get_rotation_counter_L() {
+			return &rotation_counter_L;
+		}
+
+		InterruptSpeedMeasure * get_rotation_counter_R() {
+			return &rotation_counter_R;
 		}
 
 		//Set up PID values
@@ -224,16 +228,7 @@ class double_driver{
 
 					Serial.println("-------------------");
 				}
-
-				Serial.println(rotation_counter_R.GetkDistanceCount());
-				Serial.println(rotation_counter_L.GetkDistanceCount());
-
-				//				else
-				//					pid_L.reset_pidcontrol();
-				//					pid_R.reset_pidcontrol();
 			}
-
-			Serial.println(speed_measure.get_speed_in_cm_per_m());
 		}
 };
 

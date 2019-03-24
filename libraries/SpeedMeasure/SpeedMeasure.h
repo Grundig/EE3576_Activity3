@@ -1,3 +1,6 @@
+#ifndef SPEEDMEASURE_H
+#define SPEEDMEASURE_H
+
 #include <InterruptBasedSpeedMeasure.h>
 
 class SpeedMeasure {
@@ -11,7 +14,7 @@ class SpeedMeasure {
 			float left_rpm = left_wheel->getRPMandUpdate();
 			float right_rpm = right_wheel->getRPMandUpdate();
 
-			return (left_rpm+right_rpm)/2.0;
+			return (left_rpm+right_rpm) / 2.0;
 		}
 
 	public:
@@ -25,7 +28,12 @@ class SpeedMeasure {
 		float get_speed_in_cm_per_m()
 		{
 			float rpm = get_average_rpm();
-			float speed_in_mm_per_m = rpm * wheel_circumference_mm;
-			return speed_in_mm_per_m / 10;
+			return rpm * (wheel_circumference_mm / 10.0);
+		}
+
+		float convert_speed_in_cm_per_m_to_rpm(float speed) {
+			return speed/(wheel_circumference_mm / 10.0);
 		}
 };
+
+#endif

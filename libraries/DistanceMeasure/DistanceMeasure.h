@@ -1,3 +1,5 @@
+#ifndef DISTANCEMEASURE
+#define DISTANCEMEASURE
 #include <InterruptBasedSpeedMeasure.h>
 
 class DistanceMeasure {
@@ -30,3 +32,4 @@ class DistanceMeasure {
 			return number_of_wheel_rotations * wheel_circumference_mm;
 		}
 };
+#endif
