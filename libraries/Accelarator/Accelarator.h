@@ -17,7 +17,7 @@ class Accelarator {
 		SpeedMeasure speed_measure;
 		double_driver * motor;
 		float desired_speed;
-		float delta;
+		float delta_ratio;
 		float delta_time_ms;
 		float speed_increase_cm_per_m;
 		float maximum_speed_cm_per_m;
@@ -33,12 +33,12 @@ class Accelarator {
 		bool speed_is_within_limits() {
 
 			float real_speed = speed_measure.get_speed_in_cm_per_m();
-			return abs(real_speed - desired_speed) < delta;
+			return abs(real_speed - desired_speed) < desired_speed*delta_ratio;
 		}
 	public:
 		Accelarator() {}
 		Accelarator(float start_speed_cm_per_m, float delta, float delta_time_ms, float speed_increase_cm_per_m, float maximum_speed_cm_per_m, double_driver * motor) :
-			desired_speed(start_speed_cm_per_m), delta(delta), delta_time_ms(delta_time_ms), speed_increase_cm_per_m(speed_increase_cm_per_m), maximum_speed_cm_per_m(maximum_speed_cm_per_m), motor(motor)
+			desired_speed(start_speed_cm_per_m), delta_ratio(delta/100), delta_time_ms(delta_time_ms), speed_increase_cm_per_m(speed_increase_cm_per_m), maximum_speed_cm_per_m(maximum_speed_cm_per_m), motor(motor)
 	{
 		speed_measure = SpeedMeasure(57, motor);
 

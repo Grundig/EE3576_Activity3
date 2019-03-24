@@ -22,7 +22,7 @@ void setup() {
   motor.setup_pid_R();
   motor.setup_pid_L();
 
-  accelarator = Accelarator(2000, 250, 500, 500, 4000, &motor);
+  accelarator = Accelarator(2000, 10, 500, 500, 4000, &motor);
 
   Serial.println("SETUP FINISHED");
 }
