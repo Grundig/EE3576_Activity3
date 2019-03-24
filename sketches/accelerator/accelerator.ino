@@ -1,9 +1,11 @@
 #include <double_driver.h>
 #include <Accelarator.h>
 #include <SpeedMeasure.h>
+#include <RangeSensor.h>
 
 double_driver motor;
 Accelarator accelarator;
+RangeSensor range_sensor;
 
 void setup() {
   int R_motor_pin = 9;
@@ -24,9 +26,17 @@ void setup() {
 
   accelarator = Accelarator(2000, 10, 500, 500, 4000, &motor);
 
+  range_sensor = RangeSensor(8, 7, 50);
+
   Serial.println("SETUP FINISHED");
 }
 
 void loop() {
-  accelarator.apply_desired_speed();
+  if (range_sensor.safe()) {
+    accelarator.apply_desired_speed();
+  } else {
+    motor.motor_speed_input(stop_R);
+    motor.motor_speed_input(stop_L);
+    Serial.println("There is an obstacle in the path");
+  }
 }
