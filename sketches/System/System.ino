@@ -19,6 +19,8 @@ void setup() {
   motor.set_target_speed_R(task1_speed*2);
   motor.setup_pid_R();
   motor.setup_pid_L();
+
+  Serial.println("SETUP FINISHED");
 }
 
 void loop() {
