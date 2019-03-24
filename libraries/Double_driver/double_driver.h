@@ -31,6 +31,8 @@ class double_driver{
 		IntervalCheckTimer speed_check;
 
 	public:
+		double curr_speed_R;
+		double curr_speed_L;
 
 		// Constructor
 		double_driver(){}
@@ -179,9 +181,6 @@ class double_driver{
 				printed = true;
 				Serial.println("Running task_1");
 			}
-
-			double curr_speed_R;
-			double curr_speed_L;
 
 
 			if(!motor_R.isStarted())

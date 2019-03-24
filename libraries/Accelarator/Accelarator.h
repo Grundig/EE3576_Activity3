@@ -33,14 +33,6 @@ class Accelarator {
 		bool speed_is_within_limits() {
 
 			float real_speed = speed_measure.get_speed_in_cm_per_m();
-			Serial.println("=========================");
-			Serial.print("Real speed: ");
-			Serial.println(real_speed);
-
-			Serial.print("Desired Speed: ");
-			Serial.println(desired_speed);
-			Serial.println("=========================");
-
 			return abs(real_speed - desired_speed) < delta;
 		}
 	public:
@@ -48,9 +40,11 @@ class Accelarator {
 		Accelarator(float start_speed_cm_per_m, float delta, float delta_time_ms, float speed_increase_cm_per_m, float maximum_speed_cm_per_m, double_driver * motor) :
 			desired_speed(start_speed_cm_per_m), delta(delta), delta_time_ms(delta_time_ms), speed_increase_cm_per_m(speed_increase_cm_per_m), maximum_speed_cm_per_m(maximum_speed_cm_per_m), motor(motor)
 	{
-		speed_measure = SpeedMeasure(57, motor->get_rotation_counter_L(), motor->get_rotation_counter_R());
+		speed_measure = SpeedMeasure(57, motor);
 
 		update_motor_speed();
+
+
 	}
 
 		void apply_desired_speed() {
@@ -58,7 +52,6 @@ class Accelarator {
 				unsigned long time_since_previous_check = millis() - previous_check_time;
 				time_within_limits = time_within_limits + time_since_previous_check;
 			} else {
-				Serial.println("RESET");
 				time_within_limits = 0;
 			}
 

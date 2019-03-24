@@ -5,22 +5,21 @@
 
 class SpeedMeasure {
 	private:
-		InterruptSpeedMeasure * left_wheel;
-		InterruptSpeedMeasure * right_wheel;
+		double_driver * motor;
 		float wheel_circumference_mm;
+		float last_average_rpm;
 
 		float get_average_rpm()
 		{
-			float left_rpm = left_wheel->getRPMandUpdate();
-			float right_rpm = right_wheel->getRPMandUpdate();
-
+			float left_rpm = motor->curr_speed_L;
+			float right_rpm = motor->curr_speed_R;
 			return (left_rpm+right_rpm) / 2.0;
 		}
 
 	public:
 		SpeedMeasure() {};
-		SpeedMeasure(float wheel_diameter_mm, InterruptSpeedMeasure * left_wheel, InterruptSpeedMeasure * right_wheel)
-			: left_wheel(left_wheel), right_wheel(right_wheel)
+		SpeedMeasure(float wheel_diameter_mm, double_driver * motor)
+			: motor(motor)
 		{
 			wheel_circumference_mm = wheel_diameter_mm * 3.1416;
 		}
