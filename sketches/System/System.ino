@@ -33,8 +33,8 @@ void setup() {
 void loop() {
   if (range_sensor.safe()) {
 //    motor.execute_task1(task1_distance, true);
-    motor.execute_task3(task3_distance, task3_turns);
-//    motor.execute_task4(30,20,1);
+//    motor.execute_task3(task3_distance, task3_turns);
+    motor.execute_task4(30,20,1);
   } else {
     motor.motor_speed_input(stop_R);
     motor.motor_speed_input(stop_L);

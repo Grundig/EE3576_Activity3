@@ -306,11 +306,11 @@ class double_driver{
 			}
 		}
 
-		enum state_list {pre_turn_straight, turning, post_turn_straight, finished};
+		enum state_list {pre_turn_straight, turning, post_turn_straight, finish};
 		state_list state = pre_turn_straight;
+		int round = 1;
 		
 		void execute_task4(int straight, int turn_radius, int laps){
-			int round = 1;
 			
 			if (state == pre_turn_straight) {
 				Serial.println("hello world!");
@@ -345,10 +345,10 @@ class double_driver{
 				}
 			}	
 			
-			if (round>laps){
+			if (round>laps*2){
 				motor_speed_input(stop_R);
 				motor_speed_input(stop_L);
-				state = finished;
+				state = finish;
 			}
 				
 		}
