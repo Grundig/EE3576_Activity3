@@ -9,62 +9,58 @@
 #include<InterruptBasedSpeedMeasure.h>
 #include<InterruptBasedInputs.h>
 #include<basic_speed_PID.h>
+#include<DistanceMeasure.h>
 
-
-bool verbose = false; //TURN ON FOR DEBUGGING
+bool verbose = true; //TURN ON FOR DEBUGGING
 bool printed = false;
-enum command_list {start_R, start_L, stop_R, stop_L, reverse_R, reverse_L};
+enum command_list {start_R, start_L, stop_R, stop_L, reverse_R, reverse_L, spin_R, spin_L};
 
 double target_speed_R;
 double target_speed_L;
 double pid_out_R;
 double pid_out_L;
-
+int spin_distance = 80;
+bool finished = true;
+int i = 0;
 class double_driver{
-
+	
 	protected:
 
 		// Objects
 		basic_speed_PID pid_R, pid_L;
 		HBridgeDCmotor motor_R, motor_L;
 		InterruptSpeedMeasure rotation_counter_R, rotation_counter_L;
-		IntervalCheckTimer speed_check;
-
-	public:
-		double curr_speed_R;
-		double curr_speed_L;
-
+		IntervalCheckTimer speed_check;	
+		DistanceMeasure distance;	
+		
+	public:	
+	
 		// Constructor
-		double_driver(){}
-
+		double_driver(){	
+			distance = DistanceMeasure(57, &rotation_counter_R, &rotation_counter_L);
+		}
+		
+		
 		// Set up motor
 		void setup_motor(int motorpin_R, int directionpin_R, int motorpin_L, int directionpin_L)
 		{
 			if(verbose)
 				Serial.println("Motor setup");
-
+				
 			motor_R.setup_HBridgeDCmotor(motorpin_R,directionpin_R);
-			motor_L.setup_HBridgeDCmotor(motorpin_L,directionpin_L);
+  			motor_L.setup_HBridgeDCmotor(motorpin_L,directionpin_L);
 		}
-
+		
 		// Set up speed measuring unit, hall effect sensor
 		void setup_speed_measure(ArduinoInterruptNames measure_pin_R, ArduinoInterruptNames measure_pin_L)  // int_0 = pin 2, int_1 = pin 3
 		{
 			if(verbose)
 				Serial.println("Speed measure setup");
-
+			
 			rotation_counter_R.setupSpeedMeasure(measure_pin_R);
 			rotation_counter_L.setupSpeedMeasure(measure_pin_L);
 		}
-
-		InterruptSpeedMeasure * get_rotation_counter_L() {
-			return &rotation_counter_L;
-		}
-
-		InterruptSpeedMeasure * get_rotation_counter_R() {
-			return &rotation_counter_R;
-		}
-
+		
 		//Set up PID values
 		void setup_pid_R(){
 			double kp=1; 
@@ -73,9 +69,9 @@ class double_driver{
 			double PIDoutMin=0;
 			double PIDoutMax=255;
 			pid_R= basic_speed_PID(kp, ki, kd, PIDoutMin, PIDoutMax);
-
+			
 		}
-
+		
 		void setup_pid_L(){
 			double kp=1; 
 			double ki=0.1; 
@@ -83,9 +79,9 @@ class double_driver{
 			double PIDoutMin=0;
 			double PIDoutMax=255;
 			pid_L = basic_speed_PID(kp, ki, kd, PIDoutMin, PIDoutMax);
-
+			
 		}
-
+		
 		// Set times between checks for components and system
 		void set_time_intervals(int target_speed_time)
 		{
@@ -93,15 +89,15 @@ class double_driver{
 				Serial.println("Time interval setup");
 			speed_check.setInterCheck(target_speed_time);
 		}
-
+		
 		void set_target_speed_R(int speed_R){
 			target_speed_R = speed_R;
 		}
-
+		        
 		void set_target_speed_L(int speed_L){
 			target_speed_L = speed_L;
 		}
-
+		
 		// Determine motor speed command (low, mid, high) from pushbuttons
 		void motor_speed_input(command_list command)
 		{	
@@ -110,125 +106,183 @@ class double_driver{
 				case start_R:
 					if(verbose)
 						Serial.println("	Started RIGHT");
-
+					
 					motor_R.start();	
-					break;
-
-				case start_L:
+        			break;
+        		
+        		case start_L:
 					if(verbose)
 						Serial.println("	Started LEFT");
-
+					
 					motor_L.start();	
-					break;
-
-				case stop_R:
-					if(verbose)
+        			break;
+        		
+        		case stop_R:
+	        		if(verbose)
 						Serial.println("	Stopped RIGHT");  
-
-					motor_R.stop();
-					target_speed_R=0; 
-					break;
-
-				case stop_L:
-					if(verbose)
+	        		
+					motor_R.stop(); 
+	        		break;
+	        		
+        		case stop_L:
+	        		if(verbose)
 						Serial.println("	Stopped LEFT");  
-
+	        		
 					motor_L.stop();
-					target_speed_L=0; 
-					break;
-
+	        		break;
+        			
 				case reverse_R:
-					if(verbose)
+	        		if(verbose)
 						Serial.println("	Reversing RIGHT");
-					motor_R.changedir();
-
-					break;
-
-				case reverse_L:
-					if(verbose)
+	        		motor_R.changedir();
+					
+	        		break;
+        
+        		case reverse_L:
+	        		if(verbose)
 						Serial.println("	Reversing LEFT");
 					motor_L.changedir();
+	        		break;
+	        		
+	        	case spin_R:
+	        		if(verbose)
+	        			Serial.println("	Spinning RIGHT");
+	        		rotation_counter_L.reset_distancecount();
+					motor_speed_input(stop_R);
+					motor_speed_input(start_L);
+					motor_L.setSpeedPWM(150); //for stable turning 					
+					while(!rotation_counter_L.checkDistanceMet(spin_distance)){
+						continue;
+					}
+					motor_speed_input(stop_L);
+					rotation_counter_L.reset_distancecount();
 					break;
-
+	        
+        		case spin_L:
+	        		if(verbose)
+	        			Serial.println("	Spinning LEFT");
+	        		rotation_counter_R.reset_distancecount();
+					motor_speed_input(stop_L);
+					motor_speed_input(start_R);
+					motor_R.setSpeedPWM(150); //for stable turning
+	        			while(!rotation_counter_R.checkDistanceMet(spin_distance)){
+						continue;
+					}
+					motor_speed_input(stop_R);
+					rotation_counter_R.reset_distancecount();
+	        		break;
+	        
 				default:
-					break;
+          			break;
 			}
-
+			
 		}
-
+		
 		// Get motor speed from Hall effect sensor (RPM)
 		double read_motor_speed(int side)
 		{
 			double RPM;
 			if(side == 0){
 				RPM=rotation_counter_R.getRPMandUpdate();
-				//    			Serial.print("Right: ");
-				//				Serial.print(RPM);
+//    			Serial.print("Right: ");
+//				Serial.print(RPM);
 			}
 			if(side == 1){
 				RPM=rotation_counter_L.getRPMandUpdate();
-				//    			Serial.print(" Left: ");
-				//    			Serial.println(RPM);
-			}
+//    			Serial.print(" Left: ");
+//    			Serial.println(RPM);
+    		}
 			return RPM;
-
+    		
 		}
-
+		
 		// Execute the system task
-		void execute_task1()
-		{		
+		void execute_task1(float goal_distance, bool reverse){		
 			if(verbose && printed == false){
-				printed = true;
-				Serial.println("Running task_1");
+			printed = true;
+			Serial.println("Running task_1");
 			}
-
-
-			if(!motor_R.isStarted())
+			
+			double curr_speed_R;
+			double curr_speed_L;
+			
+			
+			if(!motor_R.isStarted()){
+				rotation_counter_R.reset_distancecount();
 				motor_speed_input(start_R);
-			if(!motor_L.isStarted())
+			}
+			
+			if(!motor_L.isStarted()){
+				rotation_counter_L.reset_distancecount();
 				motor_speed_input(start_L);
-
+			}
+			
 			// PID controller to adjust speed to set point, use target speed check
 			if(speed_check.isMinChekTimeElapsedAndUpdate()){
 				curr_speed_R = read_motor_speed(0);
 				curr_speed_L = read_motor_speed(1);
-
-
-
-				if(motor_R.isStarted())
-				{
-					Serial.print("RIGHT: ");
-					Serial.print(curr_speed_R);
-					Serial.print(" ");
-					Serial.print(target_speed_R);
-					Serial.print(" PWM right: ");
-					Serial.print(pid_out_R);
-					Serial.print(" ");
-					pid_out_R = pid_R.ComputePID_output(target_speed_R, curr_speed_R);
-					motor_R.setSpeedPWM(pid_out_R);
-
-
-
+				Serial.println(distance.get_distance_travelled_mm());
+				if(distance.get_distance_travelled_mm() >= goal_distance*10){
+					rotation_counter_R.reset_distancecount();
+					rotation_counter_L.reset_distancecount();
+					if(reverse){
+						motor_speed_input(reverse_R);
+						motor_speed_input(reverse_L);		
+					} else{
+						motor_speed_input(stop_R);
+						motor_speed_input(stop_L);
+					}
+					finished = true;
 				}
-				if(motor_L.isStarted())
-				{
-					Serial.print("LEFT: ");
-					Serial.print(curr_speed_L);
-					Serial.print(" ");
-					Serial.print(target_speed_L);
+			
+			
+				if(motor_R.isStarted()){
+//					Serial.print("RIGHT: ");
+//					Serial.print(curr_speed_R);
+//					Serial.print(" ");
+//					Serial.print(target_speed_R);
+//					Serial.print(" PWM right: ");
+//					Serial.print(pid_out_R);
+//					Serial.print(" ");
 
-					Serial.print(" PWM left: ");
-					Serial.print(pid_out_L);
-					Serial.print(" ");
+					pid_out_R = pid_R.ComputePID_output(target_speed_R, curr_speed_R);
+					motor_R.setSpeedPWM(pid_out_R);	
+				}
+				
+				if(motor_L.isStarted()){
+//					Serial.print("LEFT: ");
+//					Serial.print(curr_speed_L);
+//					Serial.print(" ");
+//					Serial.print(target_speed_L);			
+//					Serial.print(" PWM left: ");
+//					Serial.print(pid_out_L);
+//					Serial.print(" ");
+//					Serial.println("-------------------");
+
 					pid_out_L = pid_L.ComputePID_output(target_speed_L, curr_speed_L);
 					motor_L.setSpeedPWM(pid_out_L);
-
-
-
-					Serial.println("-------------------");
 				}
+			}			
+		}
+		
+		void execute_task3(int distance_array[], bool turns_array[]){
+			if(i<10){
+				while (finished == false){
+	//				Serial.println("finished false");
+					execute_task1(distance_array[i], false);
+				}
+				finished = false;
+					
+				if (turns_array[i]){
+					motor_speed_input(spin_R);
+				} else{
+					motor_speed_input(spin_L);
+				}
+				i++;
 			}
 		}
+		
 };
+
 
 #endif
