@@ -201,6 +201,30 @@ class double_driver{
 			return RPM;
     		
 		}
+
+		void move_forward() {
+			if(!motor_R.isStarted()){
+				rotation_counter_R.reset_distancecount();
+				motor_speed_input(start_R);
+			}
+
+			if(!motor_L.isStarted()){
+				rotation_counter_L.reset_distancecount();
+				motor_speed_input(start_L);
+			}
+
+			// PID controller to adjust speed to set point, use target speed check
+			if(speed_check.isMinChekTimeElapsedAndUpdate()){
+				curr_speed_R = read_motor_speed(0);
+				curr_speed_L = read_motor_speed(1);
+
+				pid_out_R = pid_R.ComputePID_output(target_speed_R, curr_speed_R);
+				motor_R.setSpeedPWM(pid_out_R);
+
+				pid_out_L = pid_L.ComputePID_output(target_speed_L, curr_speed_L);
+				motor_L.setSpeedPWM(pid_out_L);
+			}
+		}
 		
 		void turn(float turn_radius){
 			float inner_radius = turn_radius - 5;

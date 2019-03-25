@@ -63,7 +63,7 @@ class Accelarator {
 				update_motor_speed();
 			}
 
-			motor->execute_task1();
+			motor->move_forward();
 		}
 };
 
