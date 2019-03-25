@@ -306,7 +306,7 @@ class double_driver{
 			}
 		}
 
-		enum state_list {pre_turn_straight, turning, post_turn_straight};
+		enum state_list {pre_turn_straight, turning, post_turn_straight, finished};
 		state_list state = pre_turn_straight;
 		
 		void execute_task4(int straight, int turn_radius, int laps){
@@ -348,6 +348,7 @@ class double_driver{
 			if (round>laps){
 				motor_speed_input(stop_R);
 				motor_speed_input(stop_L);
+				state = finished;
 			}
 				
 		}
