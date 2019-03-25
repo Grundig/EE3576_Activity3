@@ -27,13 +27,14 @@ void setup() {
   motor.set_target_speed_R(task1_speed);
   motor.setup_pid_R();
   motor.setup_pid_L();
-  range_sensor = RangeSensor(8, 7, 50);
+  range_sensor = RangeSensor(8, 7, 20);
 }
 
 void loop() {
   if (range_sensor.safe()) {
-    motor.execute_task1(task1_distance, true);
+//    motor.execute_task1(task1_distance, true);
     motor.execute_task3(task3_distance, task3_turns);
+//    motor.execute_task4(30,20,1);
   } else {
     motor.motor_speed_input(stop_R);
     motor.motor_speed_input(stop_L);

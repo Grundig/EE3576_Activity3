@@ -20,8 +20,10 @@ double target_speed_L;
 double pid_out_R;
 double pid_out_L;
 int spin_distance = 80;
-bool finished = true;
+bool finished = false;
 int i = 0;
+
+			
 class double_driver{
 	
 	protected:
@@ -34,6 +36,10 @@ class double_driver{
 		DistanceMeasure distance;	
 		
 	public:	
+
+		double curr_speed_R;
+		double curr_speed_L;
+
 	
 		// Constructor
 		double_driver(){	
@@ -196,15 +202,33 @@ class double_driver{
     		
 		}
 		
+		void turn(float turn_radius){
+			float inner_radius = turn_radius - 5;
+			float outer_radius = turn_radius + 5;
+			double turn_speed_R = target_speed_L*(inner_radius/outer_radius);
+			
+			motor_speed_input(start_R);
+			motor_speed_input(start_L);
+			if(speed_check.isMinChekTimeElapsedAndUpdate()){
+				curr_speed_R = read_motor_speed(0);
+				curr_speed_L = read_motor_speed(1);
+			
+				pid_out_R = pid_R.ComputePID_output(turn_speed_R, curr_speed_R);
+				motor_R.setSpeedPWM(pid_out_R);	
+				pid_out_L = pid_L.ComputePID_output(target_speed_L, curr_speed_L);
+				motor_L.setSpeedPWM(pid_out_L);	
+			}
+			
+		}
+		
 		// Execute the system task
 		void execute_task1(float goal_distance, bool reverse){		
+			finished = false;
+			
 			if(verbose && printed == false){
 			printed = true;
 			Serial.println("Running task_1");
 			}
-			
-			double curr_speed_R;
-			double curr_speed_L;
 			
 			
 			if(!motor_R.isStarted()){
@@ -221,7 +245,7 @@ class double_driver{
 			if(speed_check.isMinChekTimeElapsedAndUpdate()){
 				curr_speed_R = read_motor_speed(0);
 				curr_speed_L = read_motor_speed(1);
-				Serial.println(distance.get_distance_travelled_mm());
+				
 				if(distance.get_distance_travelled_mm() >= goal_distance*10){
 					rotation_counter_R.reset_distancecount();
 					rotation_counter_L.reset_distancecount();
@@ -280,6 +304,52 @@ class double_driver{
 				}
 				i++;
 			}
+		}
+
+		enum state_list {pre_turn_straight, turning, post_turn_straight};
+		state_list state = pre_turn_straight;
+		
+		void execute_task4(int straight, int turn_radius, int laps){
+			int round = 1;
+			
+			if (state == pre_turn_straight) {
+				Serial.println("hello world!");
+				execute_task1(straight/2, false);
+					if(finished){
+						state = turning;
+						pid_R.reset_pidcontrol();
+						pid_L.reset_pidcontrol();
+					}
+				
+			}
+			
+			if (state == turning ) {
+				Serial.println("turning");
+				turn(turn_radius);
+				if (distance.get_distance_travelled_mm() > turn_radius*3.1416*13.4) {
+					state = post_turn_straight;
+					rotation_counter_R.reset_distancecount();
+					rotation_counter_L.reset_distancecount();
+					pid_R.reset_pidcontrol();
+					pid_L.reset_pidcontrol();
+				}
+			}
+			if (state == post_turn_straight) {
+				execute_task1(straight/2, false);
+				Serial.println("post");
+				if (finished) {
+					state = pre_turn_straight;
+					pid_R.reset_pidcontrol();
+					pid_L.reset_pidcontrol();
+					round += 1;
+				}
+			}	
+			
+			if (round>laps){
+				motor_speed_input(stop_R);
+				motor_speed_input(stop_L);
+			}
+				
 		}
 		
 };
